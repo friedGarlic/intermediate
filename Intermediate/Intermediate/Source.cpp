@@ -182,13 +182,14 @@ namespace c
 int main() 
 {
 	bool quitting = false;
+	char buffer1[256];
+	char buffer2[256];
+	c::Database db;
+
 	do {
 		c::print(" (l)oad, (s)ave , (a)dd, (p)rint, (q)uit \n");
-		char inChar = _getch();
-		char buffer1[256];
-		char buffer2[256];
-		c::Database db;
 
+		char inChar = _getch();
 		switch (inChar)
 		{
 		case 'l':
