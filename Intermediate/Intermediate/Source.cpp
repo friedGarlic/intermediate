@@ -183,7 +183,7 @@ int main()
 {
 	bool quitting = false;
 	do {
-		c::print(" (l)oad, (s)ave , (a)dd, (p)rint, (q)uit ");
+		c::print(" (l)oad, (s)ave , (a)dd, (p)rint, (q)uit \n");
 		char inChar = _getch();
 		char buffer1[256];
 		char buffer2[256];
@@ -215,13 +215,19 @@ int main()
 			break;
 
 		case 'p':
-
+			c::print(" \n~This is my faking beautiful chart~ ");
+			c::print(" \n ------------------------------------- \n");
+			db.print();
+			_putch('\n');
+			break;
 
 		case 'q':
 			quitting = true;
 			break;
 		}
 	} while (!quitting);
+
+	while (!_kbhit());
 	return 0;
 }
 
