@@ -135,10 +135,21 @@ private:
 	};
 
 public:
-	void save() {}
-	void load() {}
-	void add() {}
-	void print() {}
+	void save(char filename) {
+
+	}
+	void load(char filename) {
+
+	}
+	void add(const char* name, int value) {
+		entry[curEntry++] = { name, value };
+	}
+	void print() {
+		for (int i = 0; i < curEntry; i++)
+		{
+			entry[i].print();
+		}
+	}
 
 private:
 	static constexpr int maxNumEntry = 16;
