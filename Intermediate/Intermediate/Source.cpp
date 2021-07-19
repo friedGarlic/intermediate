@@ -96,6 +96,17 @@ namespace c
 		*buf = 0;
 		strrev(pStart);
 	}
+
+	//try to always review this function; the *des and maxbuf
+	void strcpy(const char* src,char* des, int maxBuf)
+	{
+		int n = 0;
+		for ( ; *src != 0 && ( n + 1 , maxBuf); src++,des++)
+		{
+			*des = *src;
+		}
+		*des = 0;
+	}
 }
 
 class Datatype
@@ -109,7 +120,7 @@ private:
 			:
 			value(value)
 		{
-			std::strcpy(this->name, name);
+			c::strcpy(name, this->name, sizeof(this->name));
 		}
 		void print() {
 			c::printfixed(name, numMaxBuffer );
@@ -135,11 +146,21 @@ private:
 	};
 
 public:
-	void save(char filename) {
-
+	void save(const char* filename) {
+		std::ofstream out(filename, std::ios::binary);
+		out.write(reinterpret_cast<const char*>(&curEntry), sizeof(curEntry));
+		for (int i = 0; i < curEntry; i++)
+		{
+			entry[i].serialize(out);
+		}
 	}
-	void load(char filename) {
-
+	void load(const char* filename) {
+		std::ifstream in(filename, std::ios::binary);
+		in.read(reinterpret_cast<char*>(&curEntry), sizeof(curEntry));
+		for (int i = 0; i < curEntry; i++)
+		{
+			entry[i].deserialize(in);
+		}
 	}
 	void add(const char* name, int value) {
 		entry[curEntry++] = { name, value };
@@ -159,7 +180,7 @@ private:
 
 int main() 
 {
-
+	
 	c::print(" (l)oad, (s)ave , (a)dd, (p)rint, (q)uit ");
 
 	return 0;
