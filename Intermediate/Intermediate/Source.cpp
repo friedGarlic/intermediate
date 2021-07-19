@@ -107,82 +107,102 @@ namespace c
 		}
 		*des = 0;
 	}
-}
 
-class Datatype
-{
-private:
-	class Entry
+	class Database
 	{
-	public:
-		Entry() = default;
-		Entry(const char* name, int value)
-			:
-			value(value)
+	private:
+		class Entry
 		{
-			c::strcpy(name, this->name, sizeof(this->name));
+		public:
+			Entry() = default;
+			Entry(const char* name, int value)
+				:
+				value(value)
+			{
+				c::strcpy(name, this->name, sizeof(this->name));
+			}
+			void print() {
+				c::printfixed(name, numMaxBuffer);
+				c::print(" | ");
+				for (int i = 0; i < value; i++)
+				{
+					c::print("=");
+				}
+				c::print(" \n ");
+			}
+			void deserialize(std::ifstream& in) {
+				in.read(name, sizeof(name));
+				in.read(reinterpret_cast<char*>(&value), sizeof(value));
+			}
+			void serialize(std::ofstream& out) {
+				out.write(name, sizeof(name));
+				out.write(reinterpret_cast<char*>(&value), sizeof(value));
+			}
+		private:
+			int value;
+			static constexpr int numMaxBuffer = 10;
+			char name[numMaxBuffer];
+		};
+
+	public:
+		void save(const char* filename) {
+			std::ofstream out(filename, std::ios::binary);
+			out.write(reinterpret_cast<const char*>(&curEntry), sizeof(curEntry));
+			for (int i = 0; i < curEntry; i++)
+			{
+				entry[i].serialize(out);
+			}
+		}
+		void load(const char* filename) {
+			std::ifstream in(filename, std::ios::binary);
+			in.read(reinterpret_cast<char*>(&curEntry), sizeof(curEntry));
+			for (int i = 0; i < curEntry; i++)
+			{
+				entry[i].deserialize(in);
+			}
+		}
+		void add(const char* name, int value) {
+			entry[curEntry++] = { name, value };
 		}
 		void print() {
-			c::printfixed(name, numMaxBuffer );
-			c::print(" | ");
-			for (int i = 0; i < value; i++)
+			for (int i = 0; i < curEntry; i++)
 			{
-				c::print("=");
+				entry[i].print();
 			}
-			c::print(" \n ");
 		}
-		void deserialize(std::ifstream &in) {
-			in.read(name, sizeof(name));
-			in.read(reinterpret_cast<char*>(&value), sizeof(value));
-		}
-		void serialize(std::ofstream &out) {
-			out.write(name, sizeof(name));
-			out.write(reinterpret_cast<char*>(&value), sizeof(value));
-		}
+
 	private:
-		int value;
-		static constexpr int numMaxBuffer = 10;
-		char name[numMaxBuffer];
+		static constexpr int maxNumEntry = 16;
+		int curEntry = 0;
+		Entry entry[maxNumEntry];
 	};
 
-public:
-	void save(const char* filename) {
-		std::ofstream out(filename, std::ios::binary);
-		out.write(reinterpret_cast<const char*>(&curEntry), sizeof(curEntry));
-		for (int i = 0; i < curEntry; i++)
-		{
-			entry[i].serialize(out);
-		}
-	}
-	void load(const char* filename) {
-		std::ifstream in(filename, std::ios::binary);
-		in.read(reinterpret_cast<char*>(&curEntry), sizeof(curEntry));
-		for (int i = 0; i < curEntry; i++)
-		{
-			entry[i].deserialize(in);
-		}
-	}
-	void add(const char* name, int value) {
-		entry[curEntry++] = { name, value };
-	}
-	void print() {
-		for (int i = 0; i < curEntry; i++)
-		{
-			entry[i].print();
-		}
-	}
-
-private:
-	static constexpr int maxNumEntry = 16;
-	int curEntry = 0;
-	Entry entry[maxNumEntry];
-};
+}
 
 int main() 
 {
-	
-	c::print(" (l)oad, (s)ave , (a)dd, (p)rint, (q)uit ");
+	bool quitting = false;
+	do {
+		c::print(" (l)oad, (s)ave , (a)dd, (p)rint, (q)uit ");
+		char inChar = _getch();
+		char buffer1[256];
+		char buffer2[256];
+		c::Database db;
 
+		switch (inChar)
+		{
+		case 'l':
+			c::print("\nEnter Filename: ");
+			c::read(buffer1, sizeof(buffer1));
+			db.load(buffer1);
+			_putch('\n');
+			break;
+
+		case 'q':
+			quitting = true;
+			break;
+		}
+	} while (!quitting);
 	return 0;
 }
 
