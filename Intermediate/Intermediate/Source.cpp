@@ -198,6 +198,25 @@ int main()
 			_putch('\n');
 			break;
 
+		case 's':
+			c::print("\nEnter Filename: ");
+			c::read(buffer1, sizeof(buffer1));
+			db.save(buffer1);
+			_putch('\n');
+			break;
+
+		case 'a':
+			c::print("\n Enter name: ");
+			c::read(buffer1, sizeof(buffer1));
+			c::print("\n Enter value: ");
+			c::read(buffer2, sizeof(buffer2));
+			db.add(buffer1, c::str2int(buffer2));
+			_putch('\n');
+			break;
+
+		case 'p':
+
+
 		case 'q':
 			quitting = true;
 			break;
